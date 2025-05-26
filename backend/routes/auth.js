@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const db = require('../config/database');
+const { authenticateToken } = require('../middleware/auth');
 
 // Register
 router.post('/register', [
@@ -97,6 +98,21 @@ router.post('/login', [
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Login failed' });
+    }
+});
+
+router.get('/me', authenticateToken, async (req, res) => {
+    try {
+        // L'objet utilisateur est déjà attaché à req.user par le middleware authenticateToken
+        // Nous renvoyons simplement les informations nécessaires
+        const [users] = await db.execute('SELECT id, name, email, phone FROM users WHERE id = ?', [req.user.id]);
+        if (users.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        res.json(users[0]);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch user profile' });
     }
 });
 

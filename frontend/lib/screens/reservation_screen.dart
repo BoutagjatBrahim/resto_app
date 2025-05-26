@@ -33,20 +33,39 @@ class _ReservationScreenState extends State<ReservationScreen> {
   }
 
   void _loadAvailableSlots() async {
-    final timeSlots = ReservationService.getTimeSlots();
+    // final timeSlots = ReservationService.getTimeSlots(); // Plus nécessaire ici
     Map<String, int> slots = {};
 
-    for (String time in timeSlots) {
-      final available = await ReservationService.getAvailableSlots(
+    try {
+      // Appeler getAvailability une seule fois pour obtenir toutes les disponibilités pour la date
+      final availability = await ReservationService.getAvailability(
         _selectedDate,
-        time,
       );
-      slots[time] = available;
-    }
 
-    setState(() {
-      _availableSlots = slots;
-    });
+      // Remplir la map slots avec les disponibilités obtenues
+      for (String time in ReservationService.getTimeSlots()) {
+        slots[time] = availability[time] ?? 0;
+      }
+
+      setState(() {
+        _availableSlots = slots;
+        // Debugging print statements (temporarily keep them or adjust as needed)
+        print('Available slots loaded: $_availableSlots');
+        print('Current number of people: $_numberOfPeople');
+      });
+    } catch (e) {
+      print('Error loading available slots: $e');
+      setState(() {
+        _availableSlots = {}; // Vider les slots en cas d'erreur
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Erreur lors du chargement des disponibilités: ${e.toString()}',
+          ),
+        ),
+      );
+    }
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -82,13 +101,9 @@ class _ReservationScreenState extends State<ReservationScreen> {
         name: _nameController.text,
       );
 
-      final result = await ReservationService.createReservation(reservation);
+      try {
+        await ReservationService.createReservation(reservation);
 
-      setState(() {
-        _isLoading = false;
-      });
-
-      if (result != null) {
         showDialog(
           context: context,
           builder:
@@ -101,19 +116,28 @@ class _ReservationScreenState extends State<ReservationScreen> {
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      Navigator.pushReplacementNamed(context, '/');
+                      Navigator.pushReplacementNamed(
+                        context,
+                        '/my-reservations',
+                      );
                     },
                     child: Text('OK'),
                   ),
                 ],
               ),
         );
-      } else {
+      } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Désolé, plus de places disponibles pour ce créneau'),
+            content: Text(
+              'Erreur lors de la réservation: ${e.toString().replaceFirst('Exception:', '')}',
+            ),
           ),
         );
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
       }
     } else if (_selectedTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -191,30 +215,33 @@ class _ReservationScreenState extends State<ReservationScreen> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10),
-              Row(
-                children: List.generate(8, (index) {
-                  final count = index + 1;
-                  return Padding(
-                    padding: EdgeInsets.only(right: 10),
-                    child: ChoiceChip(
-                      label: Text('$count'),
-                      selected: _numberOfPeople == count,
-                      onSelected: (selected) {
-                        setState(() {
-                          _numberOfPeople = count;
-                        });
-                        _loadAvailableSlots();
-                      },
-                      selectedColor: Colors.orange,
-                      labelStyle: TextStyle(
-                        color:
-                            _numberOfPeople == count
-                                ? Colors.white
-                                : Colors.black,
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: List.generate(8, (index) {
+                    final count = index + 1;
+                    return Padding(
+                      padding: EdgeInsets.only(right: 10),
+                      child: ChoiceChip(
+                        label: Text('$count'),
+                        selected: _numberOfPeople == count,
+                        onSelected: (selected) {
+                          setState(() {
+                            _numberOfPeople = count;
+                          });
+                          _loadAvailableSlots();
+                        },
+                        selectedColor: Colors.orange,
+                        labelStyle: TextStyle(
+                          color:
+                              _numberOfPeople == count
+                                  ? Colors.white
+                                  : Colors.black,
+                        ),
                       ),
-                    ),
-                  );
-                }),
+                    );
+                  }),
+                ),
               ),
               SizedBox(height: 20),
 
@@ -231,7 +258,23 @@ class _ReservationScreenState extends State<ReservationScreen> {
                     ReservationService.getTimeSlots().map((time) {
                       final available = _availableSlots[time] ?? 0;
                       final isAvailable = available > 0;
+                      final isSelectable = available >= _numberOfPeople;
                       final isSelected = _selectedTime == time;
+
+                      // Diagnostic print statements
+                      if (time == '12:00') {
+                        // Choisissez un créneau à inspecter, par exemple '12:00'
+                        print('Diagnostic - Time: $time');
+                        print(
+                          'Diagnostic - Available slots for $time: $available',
+                        );
+                        print(
+                          'Diagnostic - Number of people: $_numberOfPeople',
+                        );
+                        print(
+                          'Diagnostic - isSelectable for $time: $isSelectable',
+                        );
+                      }
 
                       return ChoiceChip(
                         label: Text(
@@ -240,7 +283,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
                         ),
                         selected: isSelected,
                         onSelected:
-                            isAvailable
+                            isSelectable
                                 ? (selected) {
                                   setState(() {
                                     _selectedTime = selected ? time : null;
@@ -287,7 +330,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
                           ),
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 15),
-                    backgroundColor: Colors.green,
+                    backgroundColor: const Color.fromARGB(255, 157, 238, 159),
                   ),
                 ),
               ),

@@ -5,26 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a3dd1593-4ef2-4d08-a87e-0a6d9bf95d67" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/backend/database.sql" beforeDir="false" afterPath="$PROJECT_DIR$/backend/database.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/routes/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/routes/auth.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/.dart_tool/dartpad/web_plugin_registrant.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/.dart_tool/dartpad/web_plugin_registrant.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/.dart_tool/package_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/.dart_tool/package_config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/.dart_tool/package_config_subset" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/.dart_tool/package_config_subset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/.flutter-plugins-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/.flutter-plugins-dependencies" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/build/f872507f30e2ff2523f0f1d19160266e.cache.dill.track.dill" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/build/f872507f30e2ff2523f0f1d19160266e.cache.dill.track.dill" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/flutter_assets/NOTICES" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/build/flutter_assets/NOTICES" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/lib/models/menu_item.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/models/menu_item.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/lib/screens/login_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/screens/login_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/lib/screens/menu_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/screens/menu_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/lib/screens/my_reservations_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/screens/my_reservations_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/lib/models/reservation.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/models/reservation.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/lib/models/user.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/models/user.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/lib/screens/home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/screens/home_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/lib/screens/reservation_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/screens/reservation_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/lib/services/auth_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/services/auth_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/lib/services/menu_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/services/menu_service.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/lib/services/reservation_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/services/reservation_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

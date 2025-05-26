@@ -15,7 +15,7 @@ class ReservationService {
 
   static List<String> getTimeSlots() {
     return [
-      '11:30', '12:00', '12:30', '13:00', '13:30', // Déjeuner
+       '12:00', '12:30', '13:00', '13:30', // Déjeuner
       '19:00', '19:30', '20:00', '20:30', '21:00', // Dîner
     ];
   }

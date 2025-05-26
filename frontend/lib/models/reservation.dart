@@ -24,26 +24,26 @@ class Reservation {
 
   factory Reservation.fromJson(Map<String, dynamic> json) {
     return Reservation(
-      id: json['id'],
-      userId: json['userId'] ?? '',
-      date: DateTime.parse(json['date']),
+      id: json['id']?.toString(),
+      userId: json['user_id']?.toString() ?? '',
+      date: DateTime.parse(json['date']).toLocal(),
       time: json['time'] ?? '',
-      numberOfPeople: json['numberOfPeople'] ?? 1,
-      specialRequests: json['specialRequests'],
+      numberOfPeople: json['number_of_people'] ?? 1,
+      specialRequests: json['special_requests']?.toString(),
       status: json['status'] ?? 'pending',
-      phone: json['phone'],
-      name: json['name'],
+      phone: json['phone']?.toString(),
+      name: json['name']?.toString(),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'userId': userId,
-      'date': date.toIso8601String(),
+      'user_id': userId,
+      'date': date.toIso8601String().split('T')[0],
       'time': time,
-      'numberOfPeople': numberOfPeople,
-      'specialRequests': specialRequests,
+      'number_of_people': numberOfPeople,
+      'special_requests': specialRequests,
       'status': status,
       'phone': phone,
       'name': name,

@@ -87,7 +87,7 @@ class HomeScreen extends StatelessWidget {
                   icon: Icon(Icons.calendar_today),
                   label: Text('Réserver une Table'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
+                    backgroundColor: const Color.fromARGB(255, 166, 237, 169),
                     padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                     textStyle: TextStyle(fontSize: 18),
                   ),
@@ -103,7 +103,7 @@ class HomeScreen extends StatelessWidget {
                     icon: Icon(Icons.list_alt),
                     label: Text('Mes Réservations'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
+                      backgroundColor: const Color.fromARGB(255, 148, 197, 238),
                       padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                       textStyle: TextStyle(fontSize: 18),
                     ),

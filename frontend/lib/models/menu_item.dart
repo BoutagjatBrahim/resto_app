@@ -19,11 +19,20 @@ class MenuItem {
   });
 
   factory MenuItem.fromJson(Map<String, dynamic> json) {
+    // Tente de parser le prix comme un double, gère les cas où c'est un int ou une string.
+    final priceValue = json['price'];
+    double parsedPrice = 0.0;
+    if (priceValue is num) {
+      parsedPrice = priceValue.toDouble();
+    } else if (priceValue is String) {
+      parsedPrice = double.tryParse(priceValue) ?? 0.0;
+    }
+
     return MenuItem(
       id: json['id']?.toString() ?? '',
       name: json['name'] ?? '',
       description: json['description'] ?? '',
-      price: (json['price'] ?? 0.0).toDouble(),
+      price: parsedPrice, // Utiliser le prix parsé
       category: json['category'] ?? '',
       imageUrl: json['image_url'],
       available: json['available'] ?? 0,

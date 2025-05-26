@@ -17,10 +17,24 @@ class AuthService {
 
     final prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('auth_token');
+
+    if (_token != null) {
+      // Si un token existe, essayer de récupérer le profil utilisateur
+      try {
+        await _fetchCurrentUser();
+        print('User session restored.');
+      } catch (e) {
+        // Si la récupération échoue (par exemple, token invalide ou expiré),
+        // considérer la session comme non connectée et supprimer le token.
+        print('Failed to restore user session: $e');
+        logout(); // Cela supprimera aussi le token stocké.
+      }
+    }
+
     _initialized = true;
   }
 
-  static bool get isLoggedIn => _token != null;
+  static bool get isLoggedIn => _token != null && _currentUser != null;
 
   static void setToken(String? token) {
     _token = token;
@@ -96,5 +110,24 @@ class AuthService {
 
   static bool isAuthenticated() {
     return _token != null;
+  }
+
+  static Future<void> _fetchCurrentUser() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/auth/me'),
+      headers: headers, // Utilise les headers avec le token
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      _currentUser = User.fromJson(
+        data,
+      ); // Utilise fromJson pour créer l'objet User
+    } else if (response.statusCode == 401 || response.statusCode == 403) {
+      // Token invalide ou expiré
+      throw Exception('Authentication failed');
+    } else {
+      throw Exception('Failed to fetch user profile: ${response.statusCode}');
+    }
   }
 }
