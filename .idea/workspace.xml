@@ -6,15 +6,18 @@
   <component name="ChangeListManager">
     <list default="true" id="a3dd1593-4ef2-4d08-a87e-0a6d9bf95d67" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/database.sql" beforeDir="false" afterPath="$PROJECT_DIR$/backend/database.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/middleware/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/middleware/auth.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/routes/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/routes/auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/routes/reservations.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/routes/reservations.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/.flutter-plugins-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/.flutter-plugins-dependencies" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/f872507f30e2ff2523f0f1d19160266e.cache.dill.track.dill" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/build/f872507f30e2ff2523f0f1d19160266e.cache.dill.track.dill" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/lib/models/menu_item.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/models/menu_item.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/lib/models/reservation.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/models/reservation.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/build/aace757563656e565fcc4926c5fa9799/gen_dart_plugin_registrant.stamp" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/build/aace757563656e565fcc4926c5fa9799/gen_dart_plugin_registrant.stamp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/build/f872507f30e2ff2523f0f1d19160266e.cache.dill.track.dill" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/main.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/lib/models/user.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/models/user.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/lib/screens/home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/screens/home_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/lib/screens/my_reservations_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/screens/my_reservations_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/lib/screens/reservation_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/screens/reservation_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/lib/services/auth_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/services/auth_service.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/lib/services/reservation_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/services/reservation_service.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 const db = require('../config/database');
+const { authenticateToken, isStaff } = require('../middleware/auth');
 
-// Get user reservations
-router.get('/', async (req, res) => {
+// Get user reservations (pour les clients)
+router.get('/', authenticateToken, async (req, res) => {
     try {
         const [reservations] = await db.execute(
             'SELECT * FROM reservations WHERE user_id = ? ORDER BY date DESC, time DESC',
@@ -17,49 +18,74 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Create reservation
-router.post('/', [
-    body('date').isISO8601(),
-    body('time').matches(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/),
-    body('numberOfPeople').isInt({ min: 1, max: 20 }),
-    body('phone').notEmpty(),
-    body('name').notEmpty()
+// Get all reservations (pour les serveurs et admin)
+router.get('/all', authenticateToken, isStaff, async (req, res) => {
+    try {
+        const [reservations] = await db.execute(
+            'SELECT r.*, u.name as user_name, u.email as user_email, u.phone as user_phone ' +
+            'FROM reservations r ' +
+            'JOIN users u ON r.user_id = u.id ' +
+            'ORDER BY FIELD(r.status, \'pending\', \'confirmed\', \'cancelled\'), r.date DESC, r.time DESC'
+        );
+        res.json(reservations);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch reservations' });
+    }
+});
+
+// Update reservation status (pour les serveurs et admin)
+router.patch('/:id/status', authenticateToken, isStaff, [
+    body('status').isIn(['pending', 'confirmed', 'cancelled'])
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
 
-    const { date, time, numberOfPeople, specialRequests, phone, name } = req.body;
-
     try {
-        // Check availability (20 places per time slot)
-        const [existing] = await db.execute(
-            'SELECT SUM(number_of_people) as total FROM reservations WHERE date = ? AND time = ? AND status != "cancelled"',
-            [date, time]
+        const [result] = await db.execute(
+            'UPDATE reservations SET status = ? WHERE id = ?',
+            [req.body.status, req.params.id]
         );
 
-        const usedSlots = existing[0].total || 0;
-        if (usedSlots + numberOfPeople > 20) {
-            return res.status(400).json({ error: 'Not enough available slots' });
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Reservation not found' });
         }
 
-        // Create reservation
+        res.json({ message: 'Reservation status updated successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to update reservation status' });
+    }
+});
+
+// Create new reservation (pour les clients)
+router.post('/', authenticateToken, [
+    body('date').isDate(),
+    body('time').matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/),
+    body('number_of_people').isInt({ min: 1, max: 20 }),
+    body('special_requests').optional().isString(),
+    body('phone').optional().isString(),
+    body('name').optional().isString()
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+        const { date, time, number_of_people, special_requests, phone, name } = req.body;
+        
         const [result] = await db.execute(
-            'INSERT INTO reservations (user_id, date, time, number_of_people, special_requests, status, phone, name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-            [req.user.id, date, time, numberOfPeople, specialRequests || null, 'confirmed', phone, name]
+            'INSERT INTO reservations (user_id, date, time, number_of_people, special_requests, phone, name) ' +
+            'VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [req.user.id, date, time, number_of_people, special_requests, phone || req.user.phone, name || req.user.name]
         );
 
-        res.json({
+        res.status(201).json({
             id: result.insertId,
-            userId: req.user.id,
-            date,
-            time,
-            numberOfPeople,
-            specialRequests,
-            status: 'confirmed',
-            phone,
-            name
+            message: 'Reservation created successfully'
         });
     } catch (error) {
         console.error(error);

@@ -103,7 +103,10 @@ class _MyReservationsScreenState extends State<MyReservationsScreen> {
                     SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.pushReplacementNamed(context, '/reservation');
+                        Navigator.pushReplacementNamed(
+                          context,
+                          '/reservations',
+                        );
                       },
                       child: Text('Faire une réservation'),
                     ),

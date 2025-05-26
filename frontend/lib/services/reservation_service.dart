@@ -15,7 +15,7 @@ class ReservationService {
 
   static List<String> getTimeSlots() {
     return [
-       '12:00', '12:30', '13:00', '13:30', // Déjeuner
+      '12:00', '12:30', '13:00', '13:30', // Déjeuner
       '19:00', '19:30', '20:00', '20:30', '21:00', // Dîner
     ];
   }
@@ -39,29 +39,59 @@ class ReservationService {
 
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
+      print('Données brutes des réservations: $data');
       return data.map((item) => Reservation.fromJson(item)).toList();
     }
     throw Exception('Failed to load reservations');
   }
 
-  static Future<Reservation> createReservation(Reservation reservation) async {
+  static Future<void> createReservation(Reservation reservation) async {
     final response = await http.post(
       Uri.parse('$baseUrl/reservations'),
       headers: _headers,
       body: jsonEncode({
         'date': reservation.date.toIso8601String().split('T')[0],
         'time': reservation.time,
-        'numberOfPeople': reservation.numberOfPeople,
-        'specialRequests': reservation.specialRequests,
+        'number_of_people': reservation.numberOfPeople,
+        'special_requests': reservation.specialRequests,
         'phone': reservation.phone,
         'name': reservation.name,
       }),
     );
 
-    if (response.statusCode == 200) {
-      return Reservation.fromJson(jsonDecode(response.body));
+    print(
+      'Statut de la réponse de création de réservation : ${response.statusCode}',
+    );
+    print('Corps de la réponse de création de réservation : ${response.body}');
+
+    if (response.statusCode == 201) {
+      // Création réussie, pas besoin de parser la réponse en objet Reservation complet
+      // puisque le backend ne renvoie que l'ID et un message.
+      // L'écran de destination (Mes Réservations) rechargera la liste complète.
+      return; // Indique le succès sans retourner d'objet Reservation
+    } else {
+      // Gérer les autres codes d'erreur du backend
+      String errorMessage =
+          'Erreur inconnue lors de la création de la réservation.';
+      try {
+        final errorJson = jsonDecode(response.body);
+        if (errorJson.containsKey('error')) {
+          errorMessage = errorJson['error'];
+        } else if (response.body.isNotEmpty) {
+          errorMessage =
+              response
+                  .body; // Utiliser le corps entier si pas d'erreur formatée
+        }
+      } catch (e) {
+        // Ignorer les erreurs de parsing si le corps n'est pas JSON
+        if (response.body.isNotEmpty) {
+          errorMessage =
+              response
+                  .body; // Utiliser le corps entier si pas d'erreur formatée
+        }
+      }
+      throw Exception(errorMessage);
     }
-    throw Exception(jsonDecode(response.body)['error']);
   }
 
   static Future<Reservation> updateReservation(
@@ -100,9 +130,22 @@ class ReservationService {
 
   static Future<Map<String, int>> getAvailability(DateTime date) async {
     final dateStr = date.toIso8601String().split('T')[0];
+    print(
+      'Requête d'
+      'availability pour la date : $dateStr',
+    );
     final response = await http.get(
       Uri.parse('$baseUrl/reservations/availability/$dateStr'),
       headers: _headers,
+    );
+
+    print(
+      'Statut de la réponse d'
+      'availability : ${response.statusCode}',
+    );
+    print(
+      'Corps de la réponse d'
+      'availability : ${response.body}',
     );
 
     if (response.statusCode == 200) {
@@ -137,5 +180,30 @@ class ReservationService {
       return Reservation.fromJson(data);
     }
     throw Exception('Failed to load reservation');
+  }
+
+  static Future<List<Reservation>> getAllReservations() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/reservations/all'),
+      headers: AuthService.headers,
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => Reservation.fromJson(json)).toList();
+    }
+    throw Exception('Failed to fetch all reservations');
+  }
+
+  static Future<void> updateReservationStatus(String id, String status) async {
+    final response = await http.patch(
+      Uri.parse('$baseUrl/reservations/$id/status'),
+      headers: AuthService.headers,
+      body: jsonEncode({'status': status}),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update reservation status');
+    }
   }
 }

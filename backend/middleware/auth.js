@@ -17,4 +17,24 @@ function authenticateToken(req, res, next) {
     });
 }
 
-module.exports = { authenticateToken };
+// Middleware pour vérifier si l'utilisateur est un serveur ou un admin
+function isStaff(req, res, next) {
+    if (req.user.role !== 'serveur' && req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Access denied. Staff only.' });
+    }
+    next();
+}
+
+// Middleware pour vérifier si l'utilisateur est un admin
+function isAdmin(req, res, next) {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Access denied. Admin only.' });
+    }
+    next();
+}
+
+module.exports = {
+    authenticateToken,
+    isStaff,
+    isAdmin
+};

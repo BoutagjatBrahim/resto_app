@@ -31,20 +31,20 @@ router.post('/register', [
 
         // Insert user
         const [result] = await db.execute(
-            'INSERT INTO users (name, email, password, phone) VALUES (?, ?, ?, ?)',
-            [name, email, hashedPassword, phone || null]
+            'INSERT INTO users (name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)',
+            [name, email, hashedPassword, phone || null, 'client']
         );
 
         // Create token
         const token = jwt.sign(
-            { id: result.insertId, email, name },
+            { id: result.insertId, email, name, role: 'client' },
             process.env.JWT_SECRET,
             { expiresIn: '7d' }
         );
 
         res.json({
             token,
-            user: { id: result.insertId, email, name, phone }
+            user: { id: result.insertId, email, name, phone, role: 'client' }
         });
     } catch (error) {
         console.error(error);
@@ -81,7 +81,7 @@ router.post('/login', [
 
         // Create token
         const token = jwt.sign(
-            { id: user.id, email: user.email, name: user.name },
+            { id: user.id, email: user.email, name: user.name, role: user.role },
             process.env.JWT_SECRET,
             { expiresIn: '7d' }
         );
@@ -92,7 +92,8 @@ router.post('/login', [
                 id: user.id,
                 email: user.email,
                 name: user.name,
-                phone: user.phone
+                phone: user.phone,
+                role: user.role
             }
         });
     } catch (error) {
@@ -103,9 +104,7 @@ router.post('/login', [
 
 router.get('/me', authenticateToken, async (req, res) => {
     try {
-        // L'objet utilisateur est déjà attaché à req.user par le middleware authenticateToken
-        // Nous renvoyons simplement les informations nécessaires
-        const [users] = await db.execute('SELECT id, name, email, phone FROM users WHERE id = ?', [req.user.id]);
+        const [users] = await db.execute('SELECT id, name, email, phone, role FROM users WHERE id = ?', [req.user.id]);
         if (users.length === 0) {
             return res.status(404).json({ error: 'User not found' });
         }

@@ -33,25 +33,19 @@ class _ReservationScreenState extends State<ReservationScreen> {
   }
 
   void _loadAvailableSlots() async {
-    // final timeSlots = ReservationService.getTimeSlots(); // Plus nécessaire ici
     Map<String, int> slots = {};
 
     try {
-      // Appeler getAvailability une seule fois pour obtenir toutes les disponibilités pour la date
       final availability = await ReservationService.getAvailability(
         _selectedDate,
       );
 
-      // Remplir la map slots avec les disponibilités obtenues
       for (String time in ReservationService.getTimeSlots()) {
         slots[time] = availability[time] ?? 0;
       }
 
       setState(() {
         _availableSlots = slots;
-        // Debugging print statements (temporarily keep them or adjust as needed)
-        print('Available slots loaded: $_availableSlots');
-        print('Current number of people: $_numberOfPeople');
       });
     } catch (e) {
       print('Error loading available slots: $e');
@@ -260,21 +254,6 @@ class _ReservationScreenState extends State<ReservationScreen> {
                       final isAvailable = available > 0;
                       final isSelectable = available >= _numberOfPeople;
                       final isSelected = _selectedTime == time;
-
-                      // Diagnostic print statements
-                      if (time == '12:00') {
-                        // Choisissez un créneau à inspecter, par exemple '12:00'
-                        print('Diagnostic - Time: $time');
-                        print(
-                          'Diagnostic - Available slots for $time: $available',
-                        );
-                        print(
-                          'Diagnostic - Number of people: $_numberOfPeople',
-                        );
-                        print(
-                          'Diagnostic - isSelectable for $time: $isSelectable',
-                        );
-                      }
 
                       return ChoiceChip(
                         label: Text(

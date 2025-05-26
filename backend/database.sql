@@ -14,6 +14,7 @@ CREATE TABLE users (
   email VARCHAR(191) UNIQUE NOT NULL,
   password VARCHAR(255) NOT NULL,
   phone VARCHAR(20),
+  role ENUM('client', 'serveur', 'admin') DEFAULT 'client',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -43,12 +44,12 @@ CREATE TABLE menu_items (
   available BOOLEAN DEFAULT TRUE
 );
 
--- Insérer des utilisateurs de test
--- Mot de passe: 123456 (hashé avec bcrypt)
-INSERT INTO users (name, email, password, phone) VALUES
-('Jean Dupont', 'jean@test.com', '$2a$10$YourHashHere', '0612345678'),
-('Marie Martin', 'marie@test.com', '$2a$10$YourHashHere', '0687654321'),
-('Test User', 'test@test.com', '$2a$10$rBYLz7e8Xp1xC3FPfKyRgO0Dc7iVYkHwYxLWKMxKqQYqx8yPjmqWe', '0600000000');
+-- Insérer des utilisateurs de test avec leurs rôles
+INSERT INTO users (name, email, password, phone, role) VALUES
+('Jean Dupont', 'jean@test.com', '$2a$10$YourHashHere', '0612345678', 'client'),
+('User Auto', 'user@test.com', '$2a$10$dAbNvmQPiWtfssgT0MEVXeqc4Uph1UkR9I.RgvejEpPW.p9qHfyNa', '0600000000', 'client'),
+('Serveur Auto', 'serveur@test.com', '$2a$10$dAbNvmQPiWtfssgT0MEVXeqc4Uph1UkR9I.RgvejEpPW.p9qHfyNa', '0600000000', 'serveur'),
+('Admin Auto', 'admin@test.com', '$2a$10$dAbNvmQPiWtfssgT0MEVXeqc4Uph1UkR9I.RgvejEpPW.p9qHfyNa', '0600000000', 'admin');
 
 -- Insérer le menu complet
 INSERT INTO menu_items (name, description, price, category) VALUES
@@ -95,9 +96,9 @@ INSERT INTO reservations (user_id, date, time, number_of_people, special_request
 (1, CURDATE() - INTERVAL 5 DAY, '20:00', 6, 'Repas d\'affaires', 'cancelled', '0612345678', 'Jean Dupont'),
 (3, CURDATE() + INTERVAL 7 DAY, '13:00', 2, 'Allergie aux fruits de mer', 'pending', '0600000000', 'Test User');
 
--- Créer un utilisateur admin (optionnel)
-INSERT INTO users (name, email, password, phone) VALUES
-('Admin Restaurant', 'admin@resto.com', '$2a$10$rBYLz7e8Xp1xC3FPfKyRgO0Dc7iVYkHwYxLWKMxKqQYqx8yPjmqWe', '0100000000');
+-- Créer un utilisateur admin
+INSERT INTO users (name, email, password, phone, role) VALUES
+('Admin Restaurant', 'admin@resto.com', '$2a$10$rBYLz7e8Xp1xC3FPfKyRgO0Dc7iVYkHwYxLWKMxKqQYqx8yPjmqWe', '0100000000', 'admin');
 
 -- Afficher les statistiques
 SELECT 'Données insérées avec succès!' as Message;
