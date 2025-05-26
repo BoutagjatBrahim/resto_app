@@ -4,12 +4,32 @@ import '../models/reservation.dart';
 import 'auth_service.dart';
 
 class ReservationService {
-  static const String baseUrl = 'http://localhost:3000/api'; // Change pour ton IP en production
+  static const String baseUrl =
+      'http://localhost:3000/api'; // Change pour ton IP en production
 
   static Map<String, String> get _headers => {
     'Content-Type': 'application/json',
-    if (AuthService.token != null) 'Authorization': 'Bearer ${AuthService.token}',
+    if (AuthService.token != null)
+      'Authorization': 'Bearer ${AuthService.token}',
   };
+
+  static List<String> getTimeSlots() {
+    return [
+      '11:30', '12:00', '12:30', '13:00', '13:30', // Déjeuner
+      '19:00', '19:30', '20:00', '20:30', '21:00', // Dîner
+    ];
+  }
+
+  static Future<int> getAvailableSlots(DateTime date, String time) async {
+    try {
+      final availability = await getAvailability(date);
+      final maxCapacity = 20; // Capacité maximale par créneau
+      final currentBookings = availability[time] ?? 0;
+      return maxCapacity - currentBookings;
+    } catch (e) {
+      return 0;
+    }
+  }
 
   static Future<List<Reservation>> getUserReservations() async {
     final response = await http.get(
@@ -44,7 +64,10 @@ class ReservationService {
     throw Exception(jsonDecode(response.body)['error']);
   }
 
-  static Future<Reservation> updateReservation(String reservationId, Reservation reservation) async {
+  static Future<Reservation> updateReservation(
+    String reservationId,
+    Reservation reservation,
+  ) async {
     final response = await http.put(
       Uri.parse('$baseUrl/reservations/$reservationId'),
       headers: _headers,

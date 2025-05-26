@@ -75,7 +75,7 @@ router.post('/login', [
         // Check password
         const validPassword = await bcrypt.compare(password, user.password);
         if (!validPassword) {
-            return res.status(401).json({ error: 'Invalid credentials' });
+            return res.status(401).json({ error: 'Invalid password' });
         }
 
         // Create token

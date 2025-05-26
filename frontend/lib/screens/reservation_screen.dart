@@ -14,7 +14,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _specialRequestsController = TextEditingController();
-  
+
   DateTime _selectedDate = DateTime.now();
   String? _selectedTime;
   int _numberOfPeople = 2;
@@ -35,12 +35,15 @@ class _ReservationScreenState extends State<ReservationScreen> {
   void _loadAvailableSlots() async {
     final timeSlots = ReservationService.getTimeSlots();
     Map<String, int> slots = {};
-    
+
     for (String time in timeSlots) {
-      final available = await ReservationService.getAvailableSlots(_selectedDate, time);
+      final available = await ReservationService.getAvailableSlots(
+        _selectedDate,
+        time,
+      );
       slots[time] = available;
     }
-    
+
     setState(() {
       _availableSlots = slots;
     });
@@ -53,7 +56,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(Duration(days: 30)),
     );
-    
+
     if (picked != null && picked != _selectedDate) {
       setState(() {
         _selectedDate = picked;
@@ -88,25 +91,28 @@ class _ReservationScreenState extends State<ReservationScreen> {
       if (result != null) {
         showDialog(
           context: context,
-          builder: (context) => AlertDialog(
-            title: Text('Réservation confirmée !'),
-            content: Text(
-              'Votre table pour $_numberOfPeople personne(s) est réservée le ${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year} à $_selectedTime.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.pushReplacementNamed(context, '/');
-                },
-                child: Text('OK'),
+          builder:
+              (context) => AlertDialog(
+                title: Text('Réservation confirmée !'),
+                content: Text(
+                  'Votre table pour $_numberOfPeople personne(s) est réservée le ${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year} à $_selectedTime.',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.pushReplacementNamed(context, '/');
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
               ),
-            ],
-          ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Désolé, plus de places disponibles pour ce créneau')),
+          SnackBar(
+            content: Text('Désolé, plus de places disponibles pour ce créneau'),
+          ),
         );
       }
     } else if (_selectedTime == null) {
@@ -119,9 +125,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Réserver une table'),
-      ),
+      appBar: AppBar(title: Text('Réserver une table')),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20),
         child: Form(
@@ -203,7 +207,10 @@ class _ReservationScreenState extends State<ReservationScreen> {
                       },
                       selectedColor: Colors.orange,
                       labelStyle: TextStyle(
-                        color: _numberOfPeople == count ? Colors.white : Colors.black,
+                        color:
+                            _numberOfPeople == count
+                                ? Colors.white
+                                : Colors.black,
                       ),
                     ),
                   );
@@ -217,73 +224,39 @@ class _ReservationScreenState extends State<ReservationScreen> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10),
-              GridView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  childAspectRatio: 2.5,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                ),
-                itemCount: _availableSlots.length,
-                itemBuilder: (context, index) {
-                  final time = _availableSlots.keys.elementAt(index);
-                  final available = _availableSlots[time] ?? 0;
-                  final isAvailable = available >= _numberOfPeople;
-                  
-                  return InkWell(
-                    onTap: isAvailable ? () {
-                      setState(() {
-                        _selectedTime = time;
-                      });
-                    } : null,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: _selectedTime == time
-                            ? Colors.orange
-                            : isAvailable
-                                ? Colors.green.shade100
-                                : Colors.red.shade100,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: _selectedTime == time
-                              ? Colors.orange.shade700
-                              : isAvailable
-                                  ? Colors.green
-                                  : Colors.red,
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children:
+                    ReservationService.getTimeSlots().map((time) {
+                      final available = _availableSlots[time] ?? 0;
+                      final isAvailable = available > 0;
+                      final isSelected = _selectedTime == time;
+
+                      return ChoiceChip(
+                        label: Text(
+                          '$time\n($available places)',
+                          textAlign: TextAlign.center,
                         ),
-                      ),
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              time,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: _selectedTime == time
-                                    ? Colors.white
-                                    : Colors.black,
-                              ),
-                            ),
-                            Text(
-                              isAvailable ? '$available places' : 'Complet',
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: _selectedTime == time
-                                    ? Colors.white
-                                    : isAvailable
-                                        ? Colors.green.shade700
-                                        : Colors.red.shade700,
-                              ),
-                            ),
-                          ],
+                        selected: isSelected,
+                        onSelected:
+                            isAvailable
+                                ? (selected) {
+                                  setState(() {
+                                    _selectedTime = selected ? time : null;
+                                  });
+                                }
+                                : null,
+                        backgroundColor:
+                            isAvailable ? null : Colors.grey.shade300,
+                        selectedColor: Colors.orange,
+                        labelStyle: TextStyle(
+                          color: isSelected ? Colors.white : Colors.black,
+                          fontWeight:
+                              isSelected ? FontWeight.bold : FontWeight.normal,
                         ),
-                      ),
-                    ),
-                  );
-                },
+                      );
+                    }).toList(),
               ),
               SizedBox(height: 20),
 
@@ -305,12 +278,13 @@ class _ReservationScreenState extends State<ReservationScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _submitReservation,
-                  child: _isLoading
-                      ? CircularProgressIndicator(color: Colors.white)
-                      : Text(
-                          'Confirmer la réservation',
-                          style: TextStyle(fontSize: 18),
-                        ),
+                  child:
+                      _isLoading
+                          ? CircularProgressIndicator(color: Colors.white)
+                          : Text(
+                            'Confirmer la réservation',
+                            style: TextStyle(fontSize: 18),
+                          ),
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 15),
                     backgroundColor: Colors.green,

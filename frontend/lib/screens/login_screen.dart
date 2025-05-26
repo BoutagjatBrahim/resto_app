@@ -12,6 +12,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
+  final _phoneController = TextEditingController();
   bool _isLogin = true;
   bool _isLoading = false;
 
@@ -20,6 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _nameController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -35,9 +37,9 @@ class _LoginScreenState extends State<LoginScreen> {
             _emailController.text,
             _passwordController.text,
           );
-          
+
           if (user != null) {
-            Navigator.pushReplacementNamed(context, '/reservation');
+            Navigator.pushReplacementNamed(context, '/');
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Email ou mot de passe incorrect')),
@@ -48,16 +50,34 @@ class _LoginScreenState extends State<LoginScreen> {
             _emailController.text,
             _passwordController.text,
             _nameController.text,
+            _phoneController.text.isEmpty ? null : _phoneController.text,
           );
-          
+
           if (user != null) {
-            Navigator.pushReplacementNamed(context, '/reservation');
+            // Afficher un message de succès
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Compte créé avec succès ! Veuillez vous connecter.',
+                ),
+              ),
+            );
+            // Rediriger vers la page de connexion
+            setState(() {
+              _isLogin = true;
+              _emailController.text = '';
+              _passwordController.text = '';
+            });
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Erreur lors de l\'inscription')),
             );
           }
         }
+      } catch (e) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Une erreur est survenue: $e')));
       } finally {
         setState(() {
           _isLoading = false;
@@ -69,9 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_isLogin ? 'Connexion' : 'Inscription'),
-      ),
+      appBar: AppBar(title: Text(_isLogin ? 'Connexion' : 'Inscription')),
       body: Container(
         padding: EdgeInsets.all(20),
         child: Form(
@@ -80,13 +98,9 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.account_circle,
-                  size: 100,
-                  color: Colors.orange,
-                ),
+                Icon(Icons.account_circle, size: 100, color: Colors.orange),
                 SizedBox(height: 30),
-                
+
                 // Champ Nom (seulement pour l'inscription)
                 if (!_isLogin)
                   TextFormField(
@@ -106,7 +120,22 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                   ),
                 if (!_isLogin) SizedBox(height: 20),
-                
+
+                // Champ Téléphone (seulement pour l'inscription)
+                if (!_isLogin)
+                  TextFormField(
+                    controller: _phoneController,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      labelText: 'Téléphone (optionnel)',
+                      prefixIcon: Icon(Icons.phone),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                if (!_isLogin) SizedBox(height: 20),
+
                 // Champ Email
                 TextFormField(
                   controller: _emailController,
@@ -129,7 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
                 SizedBox(height: 20),
-                
+
                 // Champ Mot de passe
                 TextFormField(
                   controller: _passwordController,
@@ -152,22 +181,23 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
                 SizedBox(height: 30),
-                
+
                 // Bouton de soumission
                 ElevatedButton(
                   onPressed: _isLoading ? null : _submit,
-                  child: _isLoading
-                      ? CircularProgressIndicator(color: Colors.white)
-                      : Text(
-                          _isLogin ? 'Se connecter' : 'S\'inscrire',
-                          style: TextStyle(fontSize: 18),
-                        ),
+                  child:
+                      _isLoading
+                          ? CircularProgressIndicator(color: Colors.white)
+                          : Text(
+                            _isLogin ? 'Se connecter' : 'S\'inscrire',
+                            style: TextStyle(fontSize: 18),
+                          ),
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                   ),
                 ),
                 SizedBox(height: 20),
-                
+
                 // Lien pour basculer entre connexion et inscription
                 TextButton(
                   onPressed: () {
