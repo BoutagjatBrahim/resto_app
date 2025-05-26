@@ -4,8 +4,11 @@ import 'screens/login_screen.dart';
 import 'screens/menu_screen.dart';
 import 'screens/reservation_screen.dart';
 import 'screens/my_reservations_screen.dart';
+import 'services/auth_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await AuthService.init(); // Initialiser l'authentification
   runApp(MyApp());
 }
 

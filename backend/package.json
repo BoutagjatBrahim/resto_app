@@ -8,13 +8,14 @@
     "dev": "nodemon server.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
     "jsonwebtoken": "^9.0.0",
-    "bcryptjs": "^2.4.3",
     "mysql2": "^3.2.0",
-    "express-validator": "^7.0.1"
+    "resto-app-backend": "file:"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
